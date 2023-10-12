@@ -18,6 +18,8 @@ Errors will be printed if any collision happens in the code or cannot reach out 
 
 Input "quit" in the command prompt (not server console) to forcefully end both programs.
 
+**The Reason behind Windows System blocks the exe file is because of the system() and force quitting batch file used. It is okay to run this program.**
+
 
 # Future Changes
 Being able to select your own directory
