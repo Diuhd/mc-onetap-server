@@ -7,7 +7,36 @@
 int main() {
   std::string runtimepath = "C:\\mcserver\\RUNNINGCOUNT.txt";
   std::string download = "https://api.papermc.io/v2/projects/paper/versions/1.20.2/builds/233/downloads/paper-1.20.2-233.jar";
-  std::string path = "C:\\mcserver";
+  std::string configpath = "config.txt";
+  std::string path;
+  std::ifstream config(configpath);
+  if (config.is_open()) {
+    std::getline(config, path);
+    config.close();
+    std::cout << "Using Directory from config.txt.\n";
+  } else {
+    std::cout << "Config.txt doesn't exist or is empty.\n";
+    std::cout << "Choose your Directory:\n";
+    std::getline(std::cin, path);
+    std::ofstream configfile(configpath);
+    if (configfile.is_open()) {
+      configfile << path;
+      configfile.close();
+      std::cout << "Path saved to config.txt\n";
+    } else {
+      std::cerr << "Error: Unable to save path";
+      exit(1);
+    }
+  }
+  if (!path.empty() && path.back() == '\\') {
+    path.pop_back();
+  }
+  for (size_t i = 0; i < path.size(); ++i) {
+    if (path[i] == '\\') {
+      path.insert(i, "\\");
+      ++i;
+    }
+  }
   if (std::filesystem::exists(path) && std::filesystem::is_directory(path)){
     std::cout << "Directory Exists" << std::endl;
   } else {
@@ -17,7 +46,7 @@ int main() {
   }
   std::string file_name = "paper-1.20.2-233.jar";
   std::string curl_command = "curl -o \"" + path + "\\" + file_name + "\" \"" + download + "\"";
-  std::string paperpath = "C:\\mcserver\\paper-1.20.2-233.jar";
+  std::string paperpath = path + "\\paper-1.20.2-233.jar";
   if (std::filesystem::exists(paperpath)) {
     std::cout << "Paper is already downloaded in the directory!\n";
     std::cout << "Skipping curl command...\n";
@@ -25,7 +54,7 @@ int main() {
     system(curl_command.c_str());
     std::cout << "Downloaded Paper Succesfully!\n";
   }
-  std::string batpath = "C:\\mcserver\\start.bat";
+  std::string batpath = path + "\\start.bat";
   if (std::filesystem::exists(batpath)) {
     std::cout << "start.bat exists.\n";
   } else {
@@ -40,7 +69,7 @@ int main() {
     }
   }
 
-  std::string eulapath = "C:\\mcserver\\eula.txt";
+  std::string eulapath = path + "\\eula.txt";
   if (std::filesystem::exists(eulapath)) {
     std::cout << "EULA.txt already exists.\n";
   } else {
@@ -52,7 +81,7 @@ int main() {
     }
   }
 
-  std::string killscriptpath = "C:\\mcserver\\killscript.bat";
+  std::string killscriptpath = path + "\\killscript.bat";
   if (std::filesystem::exists(killscriptpath)) {
     std::cout << "Task Kill Script On.\n";
   } else {
@@ -70,11 +99,11 @@ int main() {
     }
   }
 
-  system("start cmd /k C:\\mcserver\\start.bat");
+  system(("start cmd /k " + path + "\\start.bat").c_str());
   std::string quit;
   std::cin >> quit;
   if (quit == "quit") {
-    system("start cmd /k C:\\mcserver\\killscript.bat");
+    system(("start cmd /k " + path + "\\killscript.bat").c_str());
     exit(2);
   }
 
